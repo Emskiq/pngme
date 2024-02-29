@@ -1,4 +1,4 @@
-use std::{fmt,  str::FromStr};
+use std::{fmt,  str::FromStr, error::Error};
 
 // Chunk Type consisting of 4 bytes (A-Z or a-z)
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -7,6 +7,17 @@ pub struct ChunkType {
     byte2: char, // Private bit
     byte3: char, // Reserved bit
     byte4: char, // Safe to copy bit
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct ParseChunkTypeError;
+
+impl Error for ParseChunkTypeError { }
+
+impl fmt::Display for ParseChunkTypeError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Error in parsing chunk type")
+    }
 }
 
 impl TryFrom<[u8; 4]> for ChunkType {
@@ -23,9 +34,6 @@ impl TryFrom<[u8; 4]> for ChunkType {
         }
     }
 }
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct ParseChunkTypeError;
 
 impl FromStr for ChunkType {
     type Err = ParseChunkTypeError;

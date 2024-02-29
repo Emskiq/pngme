@@ -5,10 +5,10 @@
 use std::{fmt, str::FromStr, u8};
 use crate::{
     chunk::{Chunk, ParseChunkError, CHUNK_TYPE_SIZE, CRC_SIZE, CHUNK_LEN_SIZE}, 
-    chunk_type::ChunkType, 
+    chunk_type::ChunkType,
 };
 
-struct Png {
+pub struct Png {
     header: [u8; 8],
     chunks: Vec<Chunk>,
 }
@@ -55,15 +55,15 @@ impl Png {
     pub const HEADER_SIZE: usize = 8;
     pub const STANDARD_HEADER: [u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10];
 
-    fn from_chunks(chunks: Vec<Chunk>) -> Png {
+    pub fn from_chunks(chunks: Vec<Chunk>) -> Png {
         Png { header: Self::STANDARD_HEADER, chunks: chunks}
     }
 
-    fn append_chunk(&mut self, chunk: Chunk) {
+    pub fn append_chunk(&mut self, chunk: Chunk) {
         self.chunks.push(chunk);
     }
 
-    fn remove_chunk(&mut self, chunk_type: &str) -> Result<Chunk, RemoveChunkError> {
+    pub fn remove_chunk(&mut self, chunk_type: &str) -> Result<Chunk, RemoveChunkError> {
         if let Some(pos) = self.chunks.iter().position(
                                 |chunk| *chunk.chunk_type() == ChunkType::from_str(chunk_type).unwrap()
                            )
@@ -77,15 +77,15 @@ impl Png {
         }
     }
 
-    fn header(&self) -> &[u8; 8] {
+    pub fn header(&self) -> &[u8; 8] {
         &self.header
     }
 
-    fn chunks(&self) -> &[Chunk] {
+    pub fn chunks(&self) -> &[Chunk] {
         &self.chunks
     }
 
-    fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
+    pub fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
         if let Some(pos) = self.chunks.iter().position(
             |chunk| *chunk.chunk_type() == ChunkType::from_str(chunk_type).unwrap()
         )
@@ -98,16 +98,16 @@ impl Png {
         }
     }
 
-    fn as_bytes(&self) -> Vec<u8> {
+    pub fn as_bytes(&self) -> Vec<u8> {
         self.header()
             .iter()
-            .chain(get_chunks_iterator(self.chunks()).iter())
+            .chain(convert_chunks_to_bytes(self.chunks()).iter())
             .copied()
             .collect()
     }
 }
 
-fn get_chunks_iterator(chunks: &[Chunk]) -> Vec<u8> {
+fn convert_chunks_to_bytes(chunks: &[Chunk]) -> Vec<u8> {
     chunks.iter().flat_map(|c| {
         let vec: Vec<u8> = c.as_bytes();
         vec.into_iter()

@@ -5,7 +5,7 @@
 // 3) Chunk Data - Data appropriate to the type (can be 0)
 // 4) CRC - calculated for the type and data (always will be present)
 
-use std::fmt;
+use std::{fmt, error::Error};
 use crc::{Crc, CRC_32_ISO_HDLC};
 use crate::chunk_type::{ChunkType, ParseChunkTypeError};
 
@@ -26,6 +26,14 @@ pub struct Chunk {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct ParseChunkDataError;
+
+impl Error for ParseChunkDataError { }
+
+impl fmt::Display for ParseChunkDataError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Error in parsing chunk data")
+    }
+}
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct ParseChunkError;
