@@ -2,7 +2,7 @@
 // PNG: Header with 8 bytes (always the same) + list of chunks
 // HEADER/Signature of a PNG: 137 80 78 71 13 10 26 10
 
-use std::{fmt, str::FromStr, u8};
+use std::{error::Error, fmt, str::FromStr, u8};
 use crate::{
     chunk::{Chunk, ParseChunkError, CHUNK_TYPE_SIZE, CRC_SIZE, CHUNK_LEN_SIZE}, 
     chunk_type::ChunkType,
@@ -15,6 +15,14 @@ pub struct Png {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct RemoveChunkError;
+
+impl Error for RemoveChunkError {}
+
+impl fmt::Display for RemoveChunkError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Error when removing chunk!")
+    }
+}
 
 impl TryFrom<&[u8]> for Png {
     type Error = &'static str;

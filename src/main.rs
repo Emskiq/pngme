@@ -4,13 +4,13 @@ mod chunk_type;
 mod commands;
 mod png;
 
-use std::{fs::File, io::Read, path::PathBuf, str::FromStr};
+use std::{fs::{self, OpenOptions}, io::{Read}, path::PathBuf, str::FromStr};
 use clap::Parser;
 
 use commands::Commands;
 use chunk::Chunk;
 use chunk_type::ChunkType;
-use png::Png;
+use png::{Png};
 
 pub type Error = Box<dyn std::error::Error>;
 pub type Result<T> = std::result::Result<T, Error>;
@@ -28,11 +28,7 @@ struct Cli {
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
-    // TODO: Separate function for getting the image?
-    let mut png_file = File::open(&cli.img_file)?;
-    let mut png_bytes : Vec<u8> = Vec::new();
-    png_file.read_to_end(&mut png_bytes)?;
-    let mut png = Png::try_from(png_bytes.as_slice())?;
+    let mut png = get_png (&cli.img_file)?;
 
     match &cli.cmd {
         Commands::Encode(args) => {
@@ -41,6 +37,8 @@ fn main() -> Result<()> {
 
             let chunk = Chunk::new(chunk_type, msg.as_bytes().to_owned());
             png.append_chunk(chunk);
+
+            let _ = fs::write(&cli.img_file, &png.as_bytes())?;
 
             Ok(())
         }
@@ -55,11 +53,35 @@ fn main() -> Result<()> {
 
             Ok(())
         }
-        Commands::Remove(_) => {
-            Ok(())
+        Commands::Remove(args) => {
+            match png.remove_chunk(&args.chunk_type) {
+                Ok(_) => {
+                    println!("Chunk {} successfuly removed!", args.chunk_type);
+                    let _ = fs::write(&cli.img_file, &png.as_bytes())?;
+                    Ok(())
+                }
+                Err(_) => {
+                    println!("Chunk not found in image file!");
+                    Ok(())
+                }
+            }
         }
         Commands::Print => {
+            for chunk in png.chunks() {
+                println!("Chunk that can be searched: {}", chunk.chunk_type());
+            }
             Ok(())
         }
     }
+}
+
+fn get_png(img_file: &PathBuf) -> Result<Png> {
+    let mut png_file = OpenOptions::new()
+        .read(true)
+        .open(img_file)?;
+
+    let mut png_bytes : Vec<u8> = Vec::new();
+    png_file.read_to_end(&mut png_bytes)?;
+    let png = Png::try_from(png_bytes.as_slice())?;
+    Ok(png)
 }

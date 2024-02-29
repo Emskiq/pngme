@@ -92,7 +92,6 @@ impl ChunkType {
 
 }
 
-// TODO: Delete them if you want in the end of the project
 #[cfg(test)]
 mod tests {
     use super::*;
