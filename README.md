@@ -6,8 +6,8 @@ PNG Me
 This serves as an example solution for the [PNGMe example project](https://jrdngr.github.io/pngme_book/introduction.html).<br>
 Another installment in the step 2 of my of Rust learning journey, following the [Simple Bitcoin Wallet repo](https://github.com/Emskiq/simple-bitcoin-wallet).
 
-There is a well-written documentation, which you can refer regarding the project topic, steps, etc.. <br>
-_(spoiler: It is really interesting)_
+There is a well-written documentation, which you can refer regarding the project topic, steps, etc._(spoiler: It is really interesting)_<br>
+So I would like to give an overall opinion and some insights regarding the project.
 
 ---
 
