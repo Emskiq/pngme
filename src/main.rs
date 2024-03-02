@@ -24,7 +24,6 @@ struct Cli {
     cmd: Commands,
 }
 
-
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
@@ -48,7 +47,7 @@ fn main() -> Result<()> {
                 println!("Chunk decoded succesfully! The message is {}", decoded_msg);
             }
             else {
-                println!("Chunk type is not found in the image..");
+                println!("Chunk type is not found in the image!");
             }
 
             Ok(())
